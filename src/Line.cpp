@@ -1,16 +1,15 @@
 #include "../include/Line.h"
 
-Line::Line(double x1, double y1, double x2, double y2, const std::string& name) 
+Line::Line(int x1, int y1, int x2, int y2, const std::string& name) 
     : _x1(x1), _y1(y1), _x2(x2), _y2(y2), _name(name) {
 }
 
-void Line::draw(cairo_t* cr) const {
-    cairo_move_to(cr, _x1, _y1);
-    cairo_line_to(cr, _x2, _y2);
-    cairo_stroke(cr);
+void Line::draw(SDL_Renderer* renderer, int scale_x, int scale_y) const {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderDrawLine(renderer, _x1 * scale_x, _y1 * scale_y, _x2 * scale_x, _y2 * scale_y);
 }
 
-void Line::move(double dx, double dy) {
+void Line::move(int dx, int dy) {
     _x1 += dx;
     _y1 += dy;
     _x2 += dx;

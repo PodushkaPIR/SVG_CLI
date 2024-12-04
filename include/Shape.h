@@ -1,12 +1,12 @@
 #pragma once
-#include <cairo/cairo.h>
 #include <string>
+#include <SDL2/SDL.h>
 
 class Shape {
 public:
     virtual ~Shape() = default;
-    virtual void draw(cairo_t* cr) const = 0;
-    virtual void move(double dx, double dy) = 0;
+    virtual void draw(SDL_Renderer* renderer, int scale_x, int scale_y) const = 0;
+    virtual void move(int dx, int dy) = 0;
     virtual void scale(double factor) = 0;
     virtual std::string get_name() const = 0;
 };
