@@ -1,5 +1,4 @@
 #include "../include/Line.h"
-#include <iostream>
 
 Line::Line(double x1, double y1, double x2, double y2, const std::string& name) 
     : _x1(x1), _y1(y1), _x2(x2), _y2(y2), _name(name) {
@@ -28,7 +27,6 @@ bool Line::contains(double x, double y) const {
     double distance = std::abs((_y2 - _y1) * x - (_x2 - _x1) * y + _x2 * _y1 - _y2 * _x1) / 
                       std::sqrt((_y2 - _y1) * (_y2 - _y1) + (_x2 - _x1) * (_x2 - _x1));
     const double threshold = 5.0;
-    std::cout << "distance: " << distance << "\n";
     return distance <= threshold;
 }
 

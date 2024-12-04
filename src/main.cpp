@@ -15,7 +15,7 @@ void handle_events(SDL_Window* window, SDL_Renderer* renderer, Composition& comp
         else if (event.type == SDL_MOUSEBUTTONDOWN) {
             int x, y;
             SDL_GetMouseState(&x, &y);
-            std::cout << "Coords (x,y): " << x << " " << y << "\n";
+            // std::cout << "Coords (x,y): " << x << " " << y << "\n";
             std::shared_ptr<Shape> shape = comp.get_shape_at(static_cast<double>(x), static_cast<double>(y));
             if (shape != nullptr) {
                 std::cout << "Clicked on shape: " << shape->get_name() << std::endl;

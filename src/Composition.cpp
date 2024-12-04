@@ -39,7 +39,6 @@ void Composition::draw(SDL_Renderer* renderer) const {
 
 std::shared_ptr<Shape> Composition::get_shape_at(double x, double y) const {
     for (const auto& shape : _shapes) {
-        std::cout << "Shape: " << shape->get_name() << "\n";
         if (shape->contains(x, y)) {
             return shape;
         }
