@@ -5,8 +5,9 @@
 class Shape {
 public:
     virtual ~Shape() = default;
-    virtual void draw(SDL_Renderer* renderer, int scale_x, int scale_y) const = 0;
-    virtual void move(int dx, int dy) = 0;
+    virtual void draw(SDL_Renderer* renderer) const = 0;
+    virtual void move(double dx, double dy) = 0;
     virtual void scale(double factor) = 0;
+    virtual bool contains(double x, double y) const = 0;
     virtual std::string get_name() const = 0;
 };

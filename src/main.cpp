@@ -12,6 +12,15 @@ void handle_events(SDL_Window* window, SDL_Renderer* renderer, Composition& comp
         if (event.type == SDL_QUIT) {
             std::exit(0);
         }
+        else if (event.type == SDL_MOUSEBUTTONDOWN) {
+            int x, y;
+            SDL_GetMouseState(&x, &y);
+            std::cout << "Coords (x,y): " << x << " " << y << "\n";
+            std::shared_ptr<Shape> shape = comp.get_shape_at(static_cast<double>(x), static_cast<double>(y));
+            if (shape != nullptr) {
+                std::cout << "Clicked on shape: " << shape->get_name() << std::endl;
+            }
+        }
     }
 }
 
@@ -76,9 +85,6 @@ int main(int argc, char* argv[]) {
 
     std::thread command_thread(handle_commands, std::ref(comp));
 
-    double scaleX = static_cast<double>(SCREEN_WIDTH) / VIRTUAL_WIDTH;
-    double scaleY = static_cast<double>(SCREEN_HEIGHT) / VIRTUAL_HEIGHT;
-
     bool quit = false;
     while (!quit) {
         handle_events(window, renderer, comp);
@@ -86,7 +92,7 @@ int main(int argc, char* argv[]) {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
 
-        comp.draw(renderer, scaleX, scaleY);
+        comp.draw(renderer);
 
         SDL_RenderPresent(renderer);
 

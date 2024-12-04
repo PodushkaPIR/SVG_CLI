@@ -1,5 +1,6 @@
 #include "../include/Composition.h"
 #include <algorithm>
+#include <iostream>
 
 Composition::Composition(const std::string& name) : _name(name) {}
 
@@ -30,10 +31,20 @@ void Composition::scale(double factor) {
     }
 }
 
-void Composition::draw(SDL_Renderer* renderer, int scale_x, int scale_y) const {
+void Composition::draw(SDL_Renderer* renderer) const {
     for (const auto& shape : _shapes) {
-        shape->draw(renderer, scale_x, scale_y);
+        shape->draw(renderer);
     }
+}
+
+std::shared_ptr<Shape> Composition::get_shape_at(double x, double y) const {
+    for (const auto& shape : _shapes) {
+        std::cout << "Shape: " << shape->get_name() << "\n";
+        if (shape->contains(x, y)) {
+            return shape;
+        }
+    }
+    return nullptr;
 }
 
 void Composition::save_to_file(const std::string& filename) const {
