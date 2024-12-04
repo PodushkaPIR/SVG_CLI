@@ -5,14 +5,15 @@ project(SVG_CLI)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-find_package(Curses REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(CAIRO REQUIRED cairo)
 file(GLOB SOURCES "src/*.cpp")
-include_directories(${CURSES_INCLUDE_DIR})
+include_directories(${CAIRO_INCLUDE_DIR})
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${CAIRO_LIBRARIES})
 
 # Gcc or Clang
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
