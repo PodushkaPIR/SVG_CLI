@@ -7,6 +7,7 @@ void Rectangle::draw(SDL_Renderer* renderer) const {
     for (double angle = 0; angle < 2 * M_PI; angle += 0.01) {
         SDL_Rect rect = {static_cast<int>(_x), static_cast<int>(_y),
                          static_cast<int>(_width), static_cast<int>(_height)};
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderDrawRect(renderer, &rect);
     }
 }

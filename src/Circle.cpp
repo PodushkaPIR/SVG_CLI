@@ -9,6 +9,7 @@ void Circle::draw(SDL_Renderer* renderer) const {
         double y1 = _y + _radius * std::sin(angle);
         double x2 = _x + _radius * std::cos(angle + 0.01);
         double y2 = _y + _radius * std::sin(angle + 0.01);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderDrawLine(renderer, static_cast<int>(x1), static_cast<int>(y1),
                            static_cast<int>(x2), static_cast<int>(y2));
     }
