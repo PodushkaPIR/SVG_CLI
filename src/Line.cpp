@@ -6,7 +6,8 @@ Line::Line(double x1, double y1, double x2, double y2, const std::string& name)
 
 void Line::draw(SDL_Renderer* renderer) const {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderDrawLine(renderer, _x1, _y1, _x2, _y2);
+    SDL_RenderDrawLine(renderer, static_cast<int>(_x1), static_cast<int>(_y1),
+                       static_cast<int>(_x2), static_cast<int>(_y2));
 }
 
 void Line::move(double dx, double dy) {
