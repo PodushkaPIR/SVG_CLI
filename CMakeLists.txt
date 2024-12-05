@@ -6,13 +6,20 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(SDL2 REQUIRED)
+
+set(LINENOISE_INCLUDE_DIR "/usr/include/linenoise.h")
+set(LINENOISE_LIBRARY_DIR "/usr/lib/liblinenoise.a")
+
 file(GLOB SOURCES "src/*.cpp")
+
 include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${LINENOISE_INCLUDE_DIRS})
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LINENOISE_LIBRARY_DIR})
 
 # Gcc or Clang
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
