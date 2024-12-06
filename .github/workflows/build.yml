@@ -18,10 +18,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install dependencies
+    - name: Install SDL2
       run: |
         sudo apt-get update
-        sudo apt-get install -y libsdl2-dev libnoise-dev
+        sudo apt-get install -y libsdl2-dev
+
+    - name: Install linenoise
+      run: |
+        git clone https://github.com/antirez/linenoise.git
+        cd linenoise
+        make
+        sudo make install
 
     - name: Build on GCC
       if: matrix.compiler == 'gcc'
