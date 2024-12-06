@@ -29,6 +29,11 @@ jobs:
         cd linenoise
         make
 
+    - name: Create symbolic links for linenoise
+      run: |
+        sudo ln -s ${{ github.workspace }}/linenoise/linenoise.h /usr/local/include/linenoise.h
+        sudo ln -s ${{ github.workspace }}/linenoise/linenoise.a /usr/local/lib/liblinenoise.a
+
     - name: Build on GCC
       if: matrix.compiler == 'gcc'
       run: |
