@@ -50,7 +50,6 @@ std::shared_ptr<Shape> Composition::get_shape_at(double x, double y) const {
 void Composition::save_to_file(const std::string& filename) const {
     std::ofstream out_file(filename);
     if (!out_file) {
-        std::cerr << "Failed to open file for writing: " << filename << std::endl;
         return;
     }
 
@@ -63,7 +62,6 @@ void Composition::save_to_file(const std::string& filename) const {
 void Composition::load_from_file(const std::string& filename) {
     std::ifstream input_file(filename);
     if (!input_file) {
-        std::cerr << "Failed to open file for reading: " << filename << std::endl;
         return;
     }
 
