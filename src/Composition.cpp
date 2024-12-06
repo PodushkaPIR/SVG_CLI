@@ -72,7 +72,6 @@ void Composition::load_from_file(const std::string& filename) {
     _shapes.clear();
     for (size_t i = 0; i < count; ++i) {
         std::shared_ptr<Shape> shape = Shape::load(input_file);
-        // std::cout << shape->get_name() << "\n";
         if (shape) {
             add_shape(shape);
         }

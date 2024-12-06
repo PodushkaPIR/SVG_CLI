@@ -26,15 +26,10 @@ void Line::scale(double factor) {
 }
 
 void Line::save(std::ofstream& out_file) const {
-    out_file << "Line" << " " << _x1 << " " << _y1 << " " << _x2 << " " << _y2 << " " << _name << "\n";
+    out_file << "Line\n" << _x1 << " " << _y1 << " " << _x2 << " " << _y2 << " " << _name << "\n";
 }
 
 std::shared_ptr<Shape> Line::load(std::ifstream& input_file) {
-    std::string type;
-    input_file >> type;
-    if (type != "Line") {
-        return nullptr;
-    }
     double x1, y1, x2, y2;
     std::string name;
     input_file >> x1 >> y1 >> x2 >> y2 >> name;

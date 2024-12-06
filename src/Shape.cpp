@@ -4,12 +4,18 @@
 #include "../include/Rectangle.h"
 
 std::shared_ptr<Shape> Shape::load(std::ifstream& input_file) {
-    std::shared_ptr<Shape> s1 = Line::load(input_file);
-    std::shared_ptr<Shape> s2 = Circle::load(input_file);
-    std::shared_ptr<Shape> s3 = Rectangle::load(input_file);
-    if (s1) return s1;
-    else if (s2) return s2;
-    return s3;
+    std::string type;
+    input_file >> type;
+    if (type == "Line") {
+        return Line::load(input_file);
+    }
+    else if (type == "Circle") {
+        return Circle::load(input_file);
+    }
+    else if (type == "Rectangle") {
+        return Rectangle::load(input_file);
+    }
+    return nullptr;
 }
 
 
