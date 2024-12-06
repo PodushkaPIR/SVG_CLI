@@ -1,6 +1,7 @@
 #include "../include/Composition.h"
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 
 Composition::Composition(const std::string& name) : _name(name) {}
 
@@ -47,11 +48,35 @@ std::shared_ptr<Shape> Composition::get_shape_at(double x, double y) const {
 }
 
 void Composition::save_to_file(const std::string& filename) const {
-    // Здесь будет код для сохранения композиции в файл
+    std::ofstream out_file(filename);
+    if (!out_file) {
+        std::cerr << "Failed to open file for writing: " << filename << std::endl;
+        return;
+    }
+
+    out_file << _shapes.size() << "\n";
+    for (const auto& shape : _shapes) {
+        shape->save(out_file);
+    }
 }
 
 void Composition::load_from_file(const std::string& filename) {
-    // Здесь будет код для загрузки композиции из файла
+    std::ifstream input_file(filename);
+    if (!input_file) {
+        std::cerr << "Failed to open file for reading: " << filename << std::endl;
+        return;
+    }
+
+    size_t count;
+    input_file >> count;
+    _shapes.clear();
+    for (size_t i = 0; i < count; ++i) {
+        std::shared_ptr<Shape> shape = Shape::load(input_file);
+        // std::cout << shape->get_name() << "\n";
+        if (shape) {
+            add_shape(shape);
+        }
+    }
 }
 
 std::string Composition::get_name() const {

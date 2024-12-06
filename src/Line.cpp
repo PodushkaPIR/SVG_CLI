@@ -1,4 +1,5 @@
 #include "../include/Line.h"
+#include <iostream>
 
 Line::Line(double x1, double y1, double x2, double y2, const std::string& name) 
     : _x1(x1), _y1(y1), _x2(x2), _y2(y2), _name(name) {
@@ -22,6 +23,22 @@ void Line::scale(double factor) {
     _y1 *= factor;
     _x2 *= factor;
     _y2 *= factor;
+}
+
+void Line::save(std::ofstream& out_file) const {
+    out_file << "Line" << " " << _x1 << " " << _y1 << " " << _x2 << " " << _y2 << " " << _name << "\n";
+}
+
+std::shared_ptr<Shape> Line::load(std::ifstream& input_file) {
+    std::string type;
+    input_file >> type;
+    if (type != "Line") {
+        return nullptr;
+    }
+    double x1, y1, x2, y2;
+    std::string name;
+    input_file >> x1 >> y1 >> x2 >> y2 >> name;
+    return std::make_shared<Line>(x1, y1, x2, y2, name);
 }
 
 bool Line::contains(double x, double y) const {

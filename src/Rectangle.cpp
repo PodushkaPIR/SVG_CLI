@@ -22,6 +22,22 @@ void Rectangle::move(double dx, double dy) {
     _y += dy;
 }
 
+void Rectangle::save(std::ofstream& out_file) const {
+    out_file << "Rectangle" << " " << _x << " " << _y << " " << _width << " " << _height << " " << _name << "\n";
+}
+
+std::shared_ptr<Shape> Rectangle::load(std::ifstream& input_file) {
+    std::string type;
+    input_file >> type;
+    if (type != "Rectangle") {
+        return nullptr;
+    }
+    double x, y, width, height;
+    std::string name;
+    input_file >> x >> y >> width >> height >> name;
+    return std::make_shared<Rectangle>(x, y, width, height, name);
+}
+
 std::string Rectangle::get_name() const {
     return _name;
 }

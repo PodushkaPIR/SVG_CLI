@@ -4,6 +4,7 @@
 
 
 void print_help() {
+    std::cout << '\r';
     std::cout << "Available commands:" << "\n";
     std::cout << "  add <type> <name> [params] - Add a new shape" << "\n";
     std::cout << "    Types:" << "\n";
@@ -13,11 +14,14 @@ void print_help() {
     std::cout << "  scale <factor> - Scale all shapes" << "\n";
     std::cout << "  move <name> <dx> <dy> - Move a shape" << "\n";
     std::cout << "  remove <name> - Remove a shape" << "\n";
+    std::cout << "  save <filename> - Save the composition to a file" << "\n";
+    std::cout << "  load <filename> - Load the composition from the file" << "\n";
     std::cout << "  exit - Exit the program" << "\n";
     std::cout << "  help - Show this help message" << "\n";
 }
 
 void print_shape(std::shared_ptr<Shape> shape) {
+    std::cout << '\r';
     std::cout << "Clicked on shape: " << shape->get_name() << "\n";
     std::cout << "Available commands for this shape:" << "\n";
     std::cout << "  move <name> <dx> <dy> - Move the shape" << "\n";
@@ -49,15 +53,26 @@ void handle_commands(Composition& comp) {
             linenoiseAddCompletion(lc, "add line <name> <x1> <y1> <x2> <y2>");
             linenoiseAddCompletion(lc, "add circle <name> <x> <y> <radius>");
             linenoiseAddCompletion(lc, "add rectangle <name> <x> <y> <width> <height>");
-        } else if (buf[0] == 's') {
+        }
+        else if (buf[0] == 's') {
             linenoiseAddCompletion(lc, "scale <factor>");
-        } else if (buf[0] == 'm') {
+        }
+        else if (buf[0] == 'm') {
             linenoiseAddCompletion(lc, "move <name> <dx> <dy>");
-        } else if (buf[0] == 'r') {
+        }
+        else if (buf[0] == 'r') {
             linenoiseAddCompletion(lc, "remove <name>");
-        } else if (buf[0] == 'e') {
+        }
+        else if (buf[0] == 'v') {
+            linenoiseAddCompletion(lc, "save <filename>");
+        }
+        else if (buf[0] == 'l') {
+            linenoiseAddCompletion(lc, "load <filename>");
+        }
+        else if (buf[0] == 'e') {
             linenoiseAddCompletion(lc, "exit");
-        } else if (buf[0] == 'h') {
+        }
+        else if (buf[0] == 'h') {
             linenoiseAddCompletion(lc, "help");
         }
     });
@@ -103,12 +118,24 @@ void handle_commands(Composition& comp) {
                 iss >> name;
                 comp.remove_shape(name);
             }
+            else if (command == "save") {
+                std::string filename;
+                iss >> filename;
+                comp.save_to_file(filename);
+            }
+            else if (command == "load") {
+                std::string filename;
+                iss >> filename;
+                comp.load_from_file(filename);
+            }
             else if (command == "exit") {
+                std::exit(0);
                 break;
             }
             else if (command == "help") {
                 print_help();
             }
+            delete line;
         }
     }
 }

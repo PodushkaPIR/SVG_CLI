@@ -24,6 +24,22 @@ void Circle::move(double dx, double dy) {
     _y += dy;
 }
 
+void Circle::save(std::ofstream& out_file) const {
+    out_file << "Circle" << " " << _x << " " << _y << " " << _radius << " " << _name << "\n";
+}
+
+std::shared_ptr<Shape> Circle::load(std::ifstream& input_file) {
+    std::string type;
+    input_file >> type;
+    if (type != "Circle") {
+        return nullptr;
+    }
+    double x, y, radius;
+    std::string name;
+    input_file >> x >> y >> radius >> name;
+    return std::make_shared<Circle>(x, y, radius, name);
+}
+
 std::string Circle::get_name() const {
     return _name;
 }
