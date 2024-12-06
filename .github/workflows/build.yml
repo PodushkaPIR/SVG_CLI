@@ -28,7 +28,6 @@ jobs:
         git clone https://github.com/antirez/linenoise.git
         cd linenoise
         make
-        sudo make install
 
     - name: Build on GCC
       if: matrix.compiler == 'gcc'
