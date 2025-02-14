@@ -36,8 +36,8 @@ std::shared_ptr<Shape> Line::load(std::ifstream& input_file) {
     return std::make_shared<Line>(x1, y1, x2, y2, name);
 }
 
-bool Line::contains(double x, double y) const {
-    double distance = std::abs((_y2 - _y1) * x - (_x2 - _x1) * y + _x2 * _y1 - _y2 * _x1) / 
+bool Line::contains(double px, double py) const {
+    double distance = std::abs((_y2 - _y1) * px - (_x2 - _x1) * py + _x2 * _y1 - _y2 * _x1) / 
                       std::sqrt((_y2 - _y1) * (_y2 - _y1) + (_x2 - _x1) * (_x2 - _x1));
     const double threshold = 5.0;
     return distance <= threshold;
