@@ -2,6 +2,7 @@
 #include "../include/Line.h"
 #include "../include/Circle.h"
 #include "../include/Rectangle.h"
+#include "../include/Parallelogram.h"
 
 std::shared_ptr<Shape> Shape::load(std::ifstream& input_file) {
     std::string type;
@@ -14,6 +15,9 @@ std::shared_ptr<Shape> Shape::load(std::ifstream& input_file) {
     }
     else if (type == "Rectangle") {
         return Rectangle::load(input_file);
+    }
+    else if (type == "Parallelogram") {
+        return Parallelogram::load(input_file);
     }
     return nullptr;
 }
