@@ -39,7 +39,7 @@ std::string Circle::get_name() const {
     return _name;
 }
 
-bool Circle::contains(double x, double y) const {
-    double distance = std::sqrt((_x - x) * (_x - x) + (_y - y) * (_y - y));
+bool Circle::contains(double px, double py) const {
+    double distance = std::sqrt((_x - px) * (_x - px) + (_y - py) * (_y - py));
     return distance <= _radius;
 }
