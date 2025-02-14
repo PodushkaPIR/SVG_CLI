@@ -4,6 +4,7 @@
 #include "Line.h"
 #include "Circle.h"
 #include "Rectangle.h"
+#include "Parallelogram.h"
 
 void print_help();
 void print_shape(std::shared_ptr<Shape> shape);

@@ -11,6 +11,7 @@ void print_help() {
     std::cout << "      line <name> <x1> <y1> <x2> <y2>" << "\n";
     std::cout << "      circle <name> <x> <y> <radius>" << "\n";
     std::cout << "      rectangle <name> <x> <y> <width> <height>" << "\n";
+    std::cout << "      parallelogram <name> <x> <y> <skew> <width> <height>" << "\n";
     std::cout << "  scale <factor> - Scale all shapes" << "\n";
     std::cout << "  move <name> <dx> <dy> - Move a shape" << "\n";
     std::cout << "  remove <name> - Remove a shape" << "\n";
@@ -53,6 +54,7 @@ void handle_commands(Composition& comp) {
             linenoiseAddCompletion(lc, "add line <name> <x1> <y1> <x2> <y2>");
             linenoiseAddCompletion(lc, "add circle <name> <x> <y> <radius>");
             linenoiseAddCompletion(lc, "add rectangle <name> <x> <y> <width> <height>");
+            linenoiseAddCompletion(lc, "add parallelogram <name> <x> <y> <skew> <width> <height>");
         }
         else if (buf[0] == 's') {
             linenoiseAddCompletion(lc, "scale <factor>");
@@ -87,7 +89,7 @@ void handle_commands(Composition& comp) {
             iss >> command;
             if (command == "add") {
                 std::string type, name;
-                double x1, y1, x2, y2, radius, width, height;
+                double x1, y1, x2, y2, radius, width, height, skew;
                 iss >> type >> name;
                 if (type == "line") {
                     iss >> x1 >> y1 >> x2 >> y2;
@@ -100,6 +102,10 @@ void handle_commands(Composition& comp) {
                 else if (type == "rectangle") {
                     iss >> x1 >> y1 >> width >> height;
                     comp.add_shape(std::make_shared<Rectangle>(x1, y1, width, height, name));
+                }
+                else if (type == "parallelogram") {
+                    iss >> x1 >> y1 >> skew >> width >> height;
+                    comp.add_shape(std::make_shared<Parallelogram>(x1, y1, skew, width, height, name));
                 }
             }
             else if (command == "scale") {
