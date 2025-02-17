@@ -1,75 +1,110 @@
 #!/bin/sh
 
-COMPILER=""
-DEBUG=0
-ASAN=0
-UBSAN=0
+function print_help() {
+cat << EOF
+Usage: ./build.sh [options]
 
-while getopts "c:daus" opt; do
-    case $opt in
-        c)
-            COMPILER=$OPTARG
+Options:
+  -h, --help                  Display this help message and exit.
+  -c[C], --compiler[=C]       Specify the compiler to use. 
+                              Possible values for C: 
+                                gcc   - GNU Compiler Collection.
+                                clang - LLVM Clang Compiler.
+  -d, --debug                 Set the build type to Debug
+  -s[S], --sanitizer[=S]      Enable sanitizers for detecting runtime issues.
+                              Possible values for S:
+                                address - Enable Address Sanitizer
+                                ub     - Enable Undefined Behavior Sanitizer
+EOF
+}
+
+DEBUG_MODE=false
+COMPILER=""
+SANITIZER=""
+
+if [[ -z "$1" ]]; then
+    echo "Error: no parameters. Use --help for help"
+    exit 1
+fi
+
+while [[ -n "$1" ]]; do
+    case "$1" in
+        -h|--help)
+            print_help
+            exit 0
             ;;
-        d)
-            DEBUG=1
+        -c)
+            if [[ -n "$2" && "$2" != -* ]]; then
+                COMPILER="$2"
+                echo $COMPILER
+                shift 2
+            else
+                echo "Error: option --COMPILER requires arguments."
+                exit 1
+            fi
             ;;
-        a)
-            ASAN=1
+        --compiler=*)
+            COMPILER="${1#*=}"
+            echo $COMPILER
+            shift
             ;;
-        u)
-            UBSAN=1
+        -d|--debug)
+            DEBUG_MODE=true
+            shift
             ;;
-        s)
-            ASAN=1
-            UBSAN=1
+        -s)
+            if [[ -n "$2" && "$2" != -* ]]; then
+                SANITIZER="$2"
+                echo $SANITIZER
+                shift 2
+            else
+                echo "Error: option --SANITIZER requires arguments."
+                exit 1
+            fi
             ;;
-        \?)
-            echo "Usage: $0 [-c 'Compiler'] [-d 'Debug'] [-a 'AddressSan] [-u 'UBSan'] [-s 'San']"
+        --sanitizer=*)
+            SANITIZER="${1#*=}"
+            echo $SANITIZER
+            shift
+            ;;
+        --)
+            shift
+            echo "End of options"
+            break
+            ;;
+        *)
+            echo "Unknown option: $1"
             exit 1
             ;;
     esac
 done
 
-# Compiler
-if [ -z "$COMPILER" ]; then
-    echo "Usage: $0 [-c 'Compiler'] [-d 'Debug'] [-a 'AddressSan] [-u 'UBSan'] [-s 'San']"
-    exit 1
+if { $DEBUG_MODE || [[ -n "$SANITIZER" ]]; } && [[ -z "$COMPILER" ]]; then
+  echo "Error: option --compiler is necessarily for others."
+  exit 1
 fi
-
-if [ "$COMPILER" = "gcc" ]; then
-    CMAKE_FLAGS="-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++"
-elif [ "$COMPILER" = "clang" ]; then
-    CMAKE_FLAGS="-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
-else
-    echo "Error: Unsupported compiler. Use 'gcc' or 'clang'"
-    exit 1
-fi 
 
 mkdir -p build
 cd build
 
-# Debug
-if [ $DEBUG -eq 1 ]; then
-    CMAKE_FLAGS="$CMAKE_FLAGS -DCMAKE_BUILD_TYPE=Debug"
-else
-    CMAKE_FLAGS="$CMAKE_FLAGS -DCMAKE_BUILD_TYPE=Release"
+BUILD_TYPE="Release"
+if $DEBUG_MODE; then
+  BUILDE_TYPE="Debug"
 fi
 
-# Sanitizers
-SANITIZERS_FLAGS=""
+CMAKE_ARGS=(
+    "-DCMAKE_BUILD_TYPE=$BUILD_TYPE"
+    "-DCOMPILER=$COMPILER"
+)
 
-if [ $ASAN -eq 1 ]; then
-    SANITIZERS_FLAGS="$SANITIZERS_FLAGS -fsanitize=address"
+if [[ $DEBUG_MODE == true ]]; then
+    CMAKE_ARGS+=("-DENABLE_DEBUG=ON")
 fi
 
-if [ $UBSAN -eq 1 ]; then
-    SANITIZERS_FLAGS="$SANITIZERS_FLAGS -fsanitize=undefined"
-fi
+CMAKE_ARGS+=(
+    "-DENABLE_SANITIZER_ADDRESS=$( [[ $SANITIZER == "address" ]] && echo ON || echo OFF )"
+    "-DENABLE_SANITIZER_UB=$( [[ $SANITIZER == "ub" ]] && echo ON || echo OFF )"
+)
 
-if [ -n "$SANITIZERS_FLAGS" ]; then
-    CMAKE_FLAGS="$CMAKE_FLAGS -DCMAKE_CXX_FLAGS=$SANITIZERS_FLAGS"
-    CMAKE_FLAGS="$CMAKE_FLAGS -DCMAKE_EXE_LINKER_FLAGS=$SANITIZERS_FLAGS"
-fi
-
-cmake $CMAKE_FLAGS ..
+cmake "${CMAKE_ARGS[@]}" ..
 make
