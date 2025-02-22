@@ -1,32 +1,47 @@
 #include "../include/Terminal.h"
+#include <iostream>
+#include <vector>
 #include <linenoise.h>
 #include <sstream>
 
+const std::vector<std::string> commands = {
+    "add", "scale", "move", "remove", "save", "load", "exit", "help"
+};
 
 void print_help() {
-    std::cout << '\r';
-    std::cout << "Available commands:" << "\n";
-    std::cout << "  add <type> <name> [params] - Add a new shape" << "\n";
-    std::cout << "    Types:" << "\n";
-    std::cout << "      line <name> <x1> <y1> <x2> <y2>" << "\n";
-    std::cout << "      circle <name> <x> <y> <radius>" << "\n";
-    std::cout << "      rectangle <name> <x> <y> <width> <height>" << "\n";
-    std::cout << "      parallelogram <name> <x> <y> <skew> <width> <height>" << "\n";
-    std::cout << "  scale <factor> - Scale all shapes" << "\n";
-    std::cout << "  move <name> <dx> <dy> - Move a shape" << "\n";
-    std::cout << "  remove <name> - Remove a shape" << "\n";
-    std::cout << "  save <filename> - Save the composition to a file" << "\n";
-    std::cout << "  load <filename> - Load the composition from the file" << "\n";
-    std::cout << "  exit - Exit the program" << "\n";
-    std::cout << "  help - Show this help message" << "\n";
+    std::cout << R"(
+----------------------------------------------------------
+Available commands:
+----------------------------------------------------------
+add <type> <name> [params] - Add new shape
+    Types:
+      line <name> <x1> <y1> <x2> <y2>
+      circle <name> <x> <y> <radius>
+      rectangle <name> <x> <y> <width> <height>
+      parallelogram <name> <x> <y> <skew> <width> <height>
+
+scale <factor> - Scale all shapes
+move <name> <dx> <dy> - Move a shape
+remove <name> - Remove a shape
+save <filename> - Save the composition to a file
+load <filename> - Load the composition from the file
+exit - Exit the program
+help - Show this help message
+----------------------------------------------------------
+    )";
 }
 
 void print_shape(std::shared_ptr<Shape> shape) {
-    std::cout << '\r';
-    std::cout << "Clicked on shape: " << shape->get_name() << "\n";
-    std::cout << "Available commands for this shape:" << "\n";
-    std::cout << "  move <name> <dx> <dy> - Move the shape" << "\n";
-    std::cout << "  remove <name> - Remove the shape" << "\n";
+    std::cout << '\n';
+    std::cout << "Clicked on the shape: " << shape->get_name() << "\n";
+    std::cout << R"(
+----------------------------------------------------------
+Available commands for this shape:
+----------------------------------------------------------
+move <name> <dx> <dy> - Move a shape
+remove <name> - Remove a shape
+----------------------------------------------------------
+    )";
 }
 
 void handle_events(SDL_Window* window, SDL_Renderer* renderer, Composition& comp) {
@@ -40,53 +55,47 @@ void handle_events(SDL_Window* window, SDL_Renderer* renderer, Composition& comp
             SDL_GetMouseState(&x, &y);
             std::shared_ptr<Shape> shape = comp.get_shape_at(static_cast<double>(x), static_cast<double>(y));
             if (shape != nullptr) {
+                std::cout << "\r";
+                for (size_t i = 0; i < 9; ++i) {
+                    std::cout << " ";
+                }
+                std::cout << "\r";
+
                 print_shape(shape);
+
+                std::cout << "\rcommand: ";
+                std::cout.flush();
             }
         }
     }
 }
 
-void handle_commands(Composition& comp) {
-    std::string command;
+void completion(const char* buf, linenoiseCompletions* lc) {
+    std::string input(buf);
 
-    linenoiseSetCompletionCallback([](const char* buf, linenoiseCompletions* lc) {
-        if (buf[0] == 'a') {
-            linenoiseAddCompletion(lc, "add line <name> <x1> <y1> <x2> <y2>");
-            linenoiseAddCompletion(lc, "add circle <name> <x> <y> <radius>");
-            linenoiseAddCompletion(lc, "add rectangle <name> <x> <y> <width> <height>");
-            linenoiseAddCompletion(lc, "add parallelogram <name> <x> <y> <skew> <width> <height>");
+    for (const auto& cmd : commands) {
+        if (cmd.find(input) == 0) {
+            linenoiseAddCompletion(lc, cmd.c_str());
         }
-        else if (buf[0] == 's') {
-            linenoiseAddCompletion(lc, "scale <factor>");
-        }
-        else if (buf[0] == 'm') {
-            linenoiseAddCompletion(lc, "move <name> <dx> <dy>");
-        }
-        else if (buf[0] == 'r') {
-            linenoiseAddCompletion(lc, "remove <name>");
-        }
-        else if (buf[0] == 'v') {
-            linenoiseAddCompletion(lc, "save <filename>");
-        }
-        else if (buf[0] == 'l') {
-            linenoiseAddCompletion(lc, "load <filename>");
-        }
-        else if (buf[0] == 'e') {
-            linenoiseAddCompletion(lc, "exit");
-        }
-        else if (buf[0] == 'h') {
-            linenoiseAddCompletion(lc, "help");
-        }
-    });
+    }
+}
+
+void handle_commands(Composition& comp) {
+
+    linenoiseSetCompletionCallback(completion);
+    linenoiseHistoryLoad("history.txt");
 
     while (true) {
         char* line = linenoise("command: ");
         if (line == nullptr) {
             break;
         }
+
         if (line[0] != '\0') {
             std::istringstream iss(line);
+            std::string command;
             iss >> command;
+
             if (command == "add") {
                 std::string type, name;
                 double x1, y1, x2, y2, radius, width, height, skew;
@@ -135,13 +144,17 @@ void handle_commands(Composition& comp) {
                 comp.load_from_file(filename);
             }
             else if (command == "exit") {
+                linenoiseHistoryAdd(line);
+                linenoiseHistorySave("history.txt");
                 std::exit(0);
-                break;
             }
             else if (command == "help") {
                 print_help();
             }
-            delete line;
+
+            linenoiseHistoryAdd(line);
         }
+
+        delete line;
     }
 }
