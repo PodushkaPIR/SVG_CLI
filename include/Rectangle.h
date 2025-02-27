@@ -10,8 +10,8 @@ public:
     void move(double dx, double dy) override;
     void scale(double factor) override;
     bool contains(double px, double py) const override;
-    void save(std::ofstream& out_file) const override;
-    static std::shared_ptr<Shape> load(std::ifstream& input_file);
+    void save(json& shape_json) const override;
+    static std::shared_ptr<Shape> load(const json& shape_json);
     std::string get_name() const override;
 };
 

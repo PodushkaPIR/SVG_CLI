@@ -4,6 +4,7 @@
 #include <chrono>
 #include "../include/Terminal.h"
 #include "../include/Utility.h"
+#include "../include/CompositionManager.h"
 
 
 int main() {
@@ -25,20 +26,23 @@ int main() {
         return 1;
     }
 
-    Composition comp("Test Composition");
+    CompositionManager manager; 
 
-    std::thread command_thread(handle_commands, std::ref(comp));
+    manager.create_composition("Default");
+    manager.set_current_composition("Default");
+    
+    std::thread command_thread(handle_commands, std::ref(manager));
 
     print_help();
 
     bool quit = false;
     while (!quit) {
-        handle_events(window, renderer, comp);
+        handle_events(window, renderer, manager);
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); 
         SDL_RenderClear(renderer);
 
-        comp.draw(renderer);
+        manager.draw_all_compositions(renderer);
 
         SDL_RenderPresent(renderer);
 

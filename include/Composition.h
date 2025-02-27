@@ -1,7 +1,11 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <fstream>
 #include "Shape.h"
+
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 class Composition {
 private:
@@ -15,8 +19,8 @@ public:
     void move_shape(const std::string& name, int dx, int dy);
     void scale(double factor);
     void draw(SDL_Renderer* renderer) const;
-    void save_to_file(const std::string& filename) const;
-    void load_from_file(const std::string& filename);
+    void save_to_file(json& json_file) const;
+    void load_from_file(json& comp_file);
     std::shared_ptr<Shape> get_shape_at(double x, double y) const;
     std::string get_name() const;
 };

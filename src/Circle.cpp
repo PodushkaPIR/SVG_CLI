@@ -24,16 +24,29 @@ void Circle::move(double dx, double dy) {
     _y += dy;
 }
 
-void Circle::save(std::ofstream& out_file) const {
-    out_file << "Circle\n" << _x << " " << _y << " " << _radius << " " << _name << "\n";
+// void Circle::save(std::ofstream& out_file) const {
+//     out_file << "Circle\n" << _x << " " << _y << " " << _radius << " " << _name << "\n";
+// }
+//
+// std::shared_ptr<Shape> Circle::load(std::ifstream& input_file) {
+//     double x, y, radius;
+//     std::string name;
+//     input_file >> x >> y >> radius >> name;
+//     return std::make_shared<Circle>(x, y, radius, name);
+// }
+
+void Circle::save(json& shape_json) const {
+    shape_json["type"] = "circle";
+    shape_json["name"] = get_name();
+    shape_json["x"] = _x;
+    shape_json["y"] = _y;
+    shape_json["radius"] = _radius;
+} 
+std::shared_ptr<Shape> Circle::load(const json& shape_json) {
+    if (shape_json["type"] != "circle") return nullptr;
+    return std::make_shared<Circle>(shape_json["x"], shape_json["y"], shape_json["radius"], shape_json["name"]);
 }
 
-std::shared_ptr<Shape> Circle::load(std::ifstream& input_file) {
-    double x, y, radius;
-    std::string name;
-    input_file >> x >> y >> radius >> name;
-    return std::make_shared<Circle>(x, y, radius, name);
-}
 
 std::string Circle::get_name() const {
     return _name;

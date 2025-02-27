@@ -25,15 +25,18 @@ void Line::scale(double factor) {
     _y2 *= factor;
 }
 
-void Line::save(std::ofstream& out_file) const {
-    out_file << "Line\n" << _x1 << " " << _y1 << " " << _x2 << " " << _y2 << " " << _name << "\n";
-}
-
-std::shared_ptr<Shape> Line::load(std::ifstream& input_file) {
-    double x1, y1, x2, y2;
-    std::string name;
-    input_file >> x1 >> y1 >> x2 >> y2 >> name;
-    return std::make_shared<Line>(x1, y1, x2, y2, name);
+void Line::save(json& shape_json) const {
+    shape_json["type"] = "line";
+    shape_json["name"] = get_name();
+    shape_json["x1"] = _x1;
+    shape_json["y1"] = _y1;
+    shape_json["x2"] = _x2;
+    shape_json["y2"] = _y2;
+} 
+std::shared_ptr<Shape> Line::load(const json& shape_json) {
+    if (shape_json["type"] != "line") return nullptr;
+    return std::make_shared<Line>(shape_json["x1"], shape_json["y1"], \
+                                  shape_json["x2"], shape_json["y2"], shape_json["name"]);
 }
 
 bool Line::contains(double px, double py) const {

@@ -47,29 +47,21 @@ std::shared_ptr<Shape> Composition::get_shape_at(double x, double y) const {
     return nullptr;
 }
 
-void Composition::save_to_file(const std::string& filename) const {
-    std::ofstream out_file(filename);
-    if (!out_file) {
-        return;
-    }
-
-    out_file << _shapes.size() << "\n";
+void Composition::save_to_file(json& comp_file) const {
+    comp_file["name"] = _name;
+    comp_file["shapes"] = json::array();
     for (const auto& shape : _shapes) {
-        shape->save(out_file);
+        json shape_json;
+        shape->save(shape_json);
+        comp_file["shapes"].push_back(shape_json);
     }
 }
 
-void Composition::load_from_file(const std::string& filename) {
-    std::ifstream input_file(filename);
-    if (!input_file) {
-        return;
-    }
-
-    size_t count;
-    input_file >> count;
+void Composition::load_from_file(json& comp_file) {
+    _name = comp_file["name"];
     _shapes.clear();
-    for (size_t i = 0; i < count; ++i) {
-        std::shared_ptr<Shape> shape = Shape::load(input_file);
+    for (const auto& shape_json : comp_file["shapes"]) {
+        std::shared_ptr<Shape> shape = Shape::load(shape_json);
         if (shape) {
             add_shape(shape);
         }

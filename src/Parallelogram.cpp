@@ -27,15 +27,20 @@ void Parallelogram::move(double dx, double dy) {
     _y += dy;
 }
 
-void Parallelogram::save(std::ofstream& out_file) const {
-    out_file << "Parallelogram\n" << _x << " " << _y << " " << _skew << " " << _width << " " << _height << " " << _name << "\n";
-}
+void Parallelogram::save(json& shape_json) const {
+    shape_json["type"] = "parallelogram";
+    shape_json["name"] = get_name();
+    shape_json["x"] = _x;
+    shape_json["y"] = _y;
+    shape_json["skew"] = _skew;
+    shape_json["width"] = _width;
+    shape_json["height"] = _height;
+} 
 
-std::shared_ptr<Shape> Parallelogram::load(std::ifstream& input_file) {
-    double x, y, skew, width, height;
-    std::string name;
-    input_file >> x >> y >> skew >> width >> height >> name;
-    return std::make_shared<Parallelogram>(x, y, skew, width, height, name);
+std::shared_ptr<Shape> Parallelogram::load(const json& shape_json) {
+    if (shape_json["type"] != "parallelogram") return nullptr;
+    return std::make_shared<Parallelogram>(shape_json["x"], shape_json["y"], shape_json["skew"], \
+                                           shape_json["width"], shape_json["height"], shape_json["name"]);
 }
 
 std::string Parallelogram::get_name() const {

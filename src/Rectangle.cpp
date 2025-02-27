@@ -20,15 +20,19 @@ void Rectangle::move(double dx, double dy) {
     _y += dy;
 }
 
-void Rectangle::save(std::ofstream& out_file) const {
-    out_file << "Rectangle\n" << _x << " " << _y << " " << _width << " " << _height << " " << _name << "\n";
-}
+void Rectangle::save(json& shape_json) const {
+    shape_json["type"] = "rectangle";
+    shape_json["name"] = get_name();
+    shape_json["x"] = _x;
+    shape_json["y"] = _y;
+    shape_json["width"] = _width;
+    shape_json["height"] = _height;
+} 
 
-std::shared_ptr<Shape> Rectangle::load(std::ifstream& input_file) {
-    double x, y, width, height;
-    std::string name;
-    input_file >> x >> y >> width >> height >> name;
-    return std::make_shared<Rectangle>(x, y, width, height, name);
+std::shared_ptr<Shape> Rectangle::load(const json& shape_json) {
+    if (shape_json["type"] != "rectangle") return nullptr;
+    return std::make_shared<Rectangle>(shape_json["x"], shape_json["y"], \
+                                       shape_json["width"], shape_json["height"], shape_json["name"]);
 }
 
 std::string Rectangle::get_name() const {
