@@ -65,10 +65,6 @@ void CompositionManager::load_all_compositions(const std::string& filename) {
     json json_file;
     input_file >> json_file;
 
-    // ПРОБЛЕМА ЗДЕСЬ
-    // _compositions.clear();
-    // _current_composition = nullptr;
-
     for (auto& comp_json : json_file["compositions"]) {
         auto composition = std::make_shared<Composition>("");
         composition->load_from_file(comp_json);
