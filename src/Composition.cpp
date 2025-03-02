@@ -17,12 +17,18 @@ void Composition::remove_shape(const std::string& name) {
 }
 
 
-void Composition::move_shape(const std::string& shape_name, int dx, int dy) {
+void Composition::move_shape(const std::string& shape_name, double dx, double dy) {
     for (auto& shape : _shapes) {
         if (shape->get_name() == shape_name) {
             shape->move(dx, dy);
             break;
         }
+    }
+}
+
+void Composition::move_comp(double dx, double dy) {
+    for (auto& shape : _shapes) {
+        shape->move(dx, dy);
     }
 }
 

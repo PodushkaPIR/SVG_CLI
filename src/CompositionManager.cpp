@@ -19,6 +19,14 @@ std::shared_ptr<Composition> CompositionManager::get_composition(const std::stri
     return _compositions[name];
 }
 
+std::vector<std::string> CompositionManager::get_composition_names() const {
+    std::vector<std::string> names;
+    for (const auto& [name, composition] : _compositions) {
+        names.push_back(name);
+    }
+    return names;
+}
+
 std::shared_ptr<Composition> CompositionManager::get_current_composition() const {
     return _current_composition;
 }

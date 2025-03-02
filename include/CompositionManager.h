@@ -9,6 +9,7 @@ public:
     void create_composition(const std::string& name);
     void remove_composition(const std::string& name);
     std::shared_ptr<Composition> get_composition(const std::string& name);
+    std::vector<std::string> get_composition_names() const;
     std::shared_ptr<Composition> get_current_composition() const;
     void set_current_composition(const std::string& name);
     void draw_current_composition(SDL_Renderer* renderer);

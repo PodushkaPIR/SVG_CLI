@@ -6,7 +6,7 @@
 #include <sstream>
 
 const std::vector<std::string> commands = {
-    "add", "scale", "move", "remove", "save", "load", "create", "switch", "remove_comp", "exit", "help"
+    "add", "scale", "move", "move_comp", "remove", "save", "load", "create", "switch", "list_comps", "remove_comp", "exit", "help"
 };
 
 void print_help() {
@@ -14,6 +14,9 @@ void print_help() {
 ---------------------------------------------------------------
 Available commands:
 ---------------------------------------------------------------
+create <name> - Create a new composition
+switch <name> - Switch to a composition
+list_comps - List all available compositions
 add <composition_name> <type> <name> [params] - Add new shape
     Types:
       line <name> <x1> <y1> <x2> <y2>
@@ -23,12 +26,11 @@ add <composition_name> <type> <name> [params] - Add new shape
 
 scale <factor> - Scale all shapes in the current composition
 move <name> <dx> <dy> - Move a shape in the current composition
+move_comp <dx> <dy> - Move the entire current composition
 remove <name> - Remove a shape from the current composition
+remove_comp <name> - Remove a composition
 save <filename> - Save the current composition to a file
 load <filename> - Load a composition from a file
-create <name> - Create a new composition
-switch <name> - Switch to a composition
-remove_comp <name> - Remove a composition
 exit - Exit the program
 help - Show this help message
 ---------------------------------------------------------------
@@ -110,27 +112,44 @@ void handle_commands(CompositionManager& manager) {
 
             if (command == "add") {
                 std::string comp_name, type, name;
-                double x1, y1, x2, y2, radius, width, height, skew;
-                iss >> comp_name >> type >> name;
 
-                auto composition = manager.get_composition(comp_name);
-
-                if (type == "line") {
-                    iss >> x1 >> y1 >> x2 >> y2;
-                    composition->add_shape(std::make_shared<Line>(x1, y1, x2, y2, name));
-                }
-                else if (type == "circle") {
-                    iss >> x1 >> y1 >> radius;
-                    composition->add_shape(std::make_shared<Circle>(x1, y1, radius, name));
-                }
-                else if (type == "rectangle") {
-                    iss >> x1 >> y1 >> width >> height;
-                    composition->add_shape(std::make_shared<Rectangle>(x1, y1, width, height, name));
-                }
-                else if (type == "parallelogram") {
-                    iss >> x1 >> y1 >> skew >> width >> height;
-                    composition->add_shape(std::make_shared<Parallelogram>(x1, y1, skew, width, height, name));
-                }
+                if (iss >> comp_name >> type >> name) {
+                    auto composition = manager.get_composition(comp_name);
+                    if (!composition) {
+                        std::cout << "Composition '" << comp_name << "' not found!\n";
+                        continue;
+                    }
+                    if (type == "line") {
+                        double x1, y1, x2, y2;
+                        if (iss >> x1 >> y1 >> x2 >> y2) {
+                            composition->add_shape(std::make_shared<Line>(x1, y1, x2, y2, name));
+                        } 
+                        else std::cout << "Invalid arguments for line\n";
+                    } 
+                    else if (type == "circle") {
+                        double x, y, radius;
+                        if (iss >> x >> y >> radius) {
+                            composition->add_shape(std::make_shared<Circle>(x, y, radius, name));
+                        } 
+                        else std::cout << "Invalid arguments for circle\n";
+                    } 
+                    else if (type == "rectangle") {
+                        double x, y, width, height;
+                        if (iss >> x >> y >> width >> height) {
+                            composition->add_shape(std::make_shared<Rectangle>(x, y, width, height, name));
+                        } 
+                        else std::cout << "Invalid arguments for rectangle\n";
+                    } 
+                    else if (type == "parallelogram") {
+                        double x, y, skew, width, height;
+                        if (iss >> x >> y >> skew >> width >> height) {
+                            composition->add_shape(std::make_shared<Parallelogram>(x, y, skew, width, height, name));
+                        } 
+                        else std::cout << "Invalid arguments for parallelogram\n";
+                    } 
+                    else std::cout << "Unknown shape type: " << type << "\n";
+                } 
+                else std::cout << "Invalid arguments for add\n";
             }
 
             else if (command == "scale") {
@@ -169,6 +188,23 @@ void handle_commands(CompositionManager& manager) {
                 iss >> name;
                 manager.set_current_composition(name);
             }
+            else if (command == "list_comps") {
+                std::vector<std::string> comp_names = manager.get_composition_names();
+                if (comp_names.empty()) {
+                    std::cout << "No compositions.\n";
+                } 
+                else {
+                    std::cout << "Compositions:\n";
+                    for (const auto& name : comp_names) {
+                        std::cout << " - " << name << "\n";
+                    }
+                }
+            }
+            else if (command == "move_comp") {
+                double dx, dy;
+                iss >> dx >> dy;
+                manager.get_current_composition()->move_comp(dx, dy);
+            }
             else if (command == "remove_comp") {
                 std::string name;
                 iss >> name;
@@ -183,7 +219,7 @@ void handle_commands(CompositionManager& manager) {
                 print_help();
             }
             else {
-                std::cout << "Unknown command. Type 'help' for a list of commands.\n";
+                std::cout << "Unknown command. Type 'help' for a list of commands\n";
             }
 
             linenoiseHistoryAdd(line);

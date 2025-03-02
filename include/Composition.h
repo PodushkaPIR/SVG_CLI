@@ -16,7 +16,8 @@ public:
     Composition(const std::string& name);
     void add_shape(std::shared_ptr<Shape> shape);
     void remove_shape(const std::string& name);
-    void move_shape(const std::string& name, int dx, int dy);
+    void move_shape(const std::string& name, double dx, double dy);
+    void move_comp(double dx, double dy);
     void scale(double factor);
     void draw(SDL_Renderer* renderer) const;
     void save_to_file(json& json_file) const;
